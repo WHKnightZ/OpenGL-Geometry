@@ -1,0 +1,1 @@
+g++ *.cpp Library/*.cpp -o TheAviator.AppImage -lGL -lGLU -lglut && ./TheAviator.AppImage
