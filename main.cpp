@@ -3,7 +3,7 @@
 
 float rotate_x = -70.0f, rotate_y = 0.0f, rotate_z = 0.0f;
 
-Cylinder *sphere;
+Sphere *sphere;
 
 void init() {
     printf("%s\n", glGetString(GL_VENDOR));
@@ -14,7 +14,7 @@ void init() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glViewport(0, 0, WIDTH, HEIGHT);
-    gluPerspective(30.0, 1.5, 1.0, 2000.0);
+    gluPerspective(30.0, 1, 1.0, 2000.0);
     glTranslatef(0.0f, 0.0f, -400.0f);
     glMatrixMode(GL_MODELVIEW);
     glEnable(GL_BLEND);
@@ -32,7 +32,7 @@ void init() {
 
     Math::init();
 
-    sphere = new Cylinder(40.0f, 40.0f, 60.0f, 20, 10);
+    sphere = new Sphere(40.0f, 32, 32);
 }
 
 void display() {
@@ -54,16 +54,17 @@ void timer(int v) {
 }
 
 void idle() {
-    static int fps = 0;
+    static float fps = 0.0f;
     static int time_old = clock();
     int time_new = clock();
     int time_offset = time_new - time_old;
-    if (time_offset > 1000000) {
+    if (time_offset > CLOCKS_PER_SEC) {
         time_old = time_new;
-        printf("FPS: %.2f\n", fps * 1000000.0f / time_offset);
-        fps = 0;
+        printf("FPS: %.2f\n", fps * CLOCKS_PER_SEC / time_offset);
+        fps = 0.0f;
     }
-    fps += 1;
+    fps += 1.0f;
+    rotate_z += 0.5f;
     glutPostRedisplay();
 }
 

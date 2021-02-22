@@ -12,11 +12,10 @@ class Face {
   public:
     int *vert_indices;
     float *normal;
-    int edge, drt;
+    int drt;
 
-    Face(int _vert_indices[], int _edge, int _drt) {
+    Face(int _vert_indices[], int _drt) {
         vert_indices = _vert_indices;
-        edge = _edge;
         drt = _drt;
         normal = new float[3];
     }
@@ -50,9 +49,10 @@ class Geometry {
     void draw() {
         glColor4fv(color);
         for (Face *face : faces) {
+            // render_wire(face);
             glBegin(GL_POLYGON);
             glNormal3fv(face->normal);
-            for (int i = 0; i < face->edge; i++)
+            for (int i = 0; i < 3; i++)
                 glVertex3fv(vertices[face->vert_indices[i]]);
             glEnd();
         }
@@ -74,11 +74,11 @@ class Geometry {
     void render_wire(Face *face) {
         glColor3f(0.0f, 0.0f, 0.0f);
         glBegin(GL_LINES);
-        for (int i = 0; i < face->edge - 1; i++) {
+        for (int i = 0; i < 2; i++) {
             glVertex3fv(vertices[face->vert_indices[i]]);
             glVertex3fv(vertices[face->vert_indices[i + 1]]);
         }
-        glVertex3fv(vertices[face->vert_indices[face->edge - 1]]);
+        glVertex3fv(vertices[face->vert_indices[2]]);
         glVertex3fv(vertices[face->vert_indices[0]]);
         glEnd();
     }
@@ -107,17 +107,51 @@ class Sphere : public Geometry {
         slices = Math::clamp(slices, 3, 32);
         stacks = Math::clamp(stacks, 2, 32);
         float x, y, z, angle_increment = Math::degree_to_radian(360.0f / slices);
-        float z_offset = -radius * 2 / stacks;
+        float z_offset = Math::degree_to_radian(180.0f / stacks);
+        // float z_offset = -radius * 2 / stacks;
         float stack_radius;
+        add_vertex(new float[3]{0, 0, radius});
+        add_vertex(new float[3]{0, 0, -radius});
         for (int i = 1; i < stacks; i++) {
-            z = radius + z_offset * i;
+            z = Math::get_sin(3.14159/2 - z_offset * i) * radius;
             stack_radius = sqrt(radius * radius - z * z);
+            // stack_radius = Math::get_sin(z_offset * i) * radius;
             for (int j = 0; j < slices; j++) {
                 x = Math::get_cos(j * angle_increment);
                 y = Math::get_sin(j * angle_increment);
                 add_vertex(new float[3]{x * stack_radius, y * stack_radius, z});
             }
         }
+        int total_vertices = slices * (stacks - 1) + 2;
+        int first_top, first_bot, second_top, second_bot;
+        for (int i = 0; i < slices; i++) {
+            first_top = 2 + i;
+            first_bot = total_vertices - i - 1;
+            if (i == slices - 1) {
+                second_top = 2;
+                second_bot = total_vertices - 1;
+            } else {
+                second_top = 3 + i;
+                second_bot = total_vertices - i - 2;
+            }
+            add_face(new Face(new int[3]{0, first_top, second_top}, 1));
+            add_face(new Face(new int[3]{1, first_bot, second_bot}, 1));
+        }
+        int stacks_1 = stacks - 2;
+        for (int i = 0; i < slices; i++) {
+            first_top = 2 + i;
+            second_top = (i != slices - 1) ? first_top + 1 : 2;
+            for (int j = 0; j < stacks_1; j++) {
+                first_bot = first_top + slices;
+                second_bot = second_top + slices;
+                add_face(new Face(new int[3]{first_top, first_bot, second_top}, 1));
+                add_face(new Face(new int[3]{first_bot, second_bot, second_top}, 1));
+                first_top = first_bot;
+                second_top = second_bot;
+            }
+        }
+        calc_normal();
+        create_list();
     }
 };
 
@@ -144,8 +178,8 @@ class Cylinder : public Geometry {
             first_bot = first_top + stacks;
             second_top = (i + 1) * stacks_1;
             second_bot = second_top + stacks;
-            add_face(new Face(new int[3]{0, first_top, second_top}, 3, 1));
-            add_face(new Face(new int[3]{stacks, first_bot, second_bot}, 3, -1));
+            add_face(new Face(new int[3]{0, first_top, second_top}, 1));
+            add_face(new Face(new int[3]{stacks, first_bot, second_bot}, -1));
         }
         for (int i = 0; i < slices; i++) {
             first_top = i * stacks_1;
@@ -153,8 +187,8 @@ class Cylinder : public Geometry {
             for (int j = 0; j < stacks; j++) {
                 first_bot = first_top + 1;
                 second_bot = second_top + 1;
-                add_face(new Face(new int[3]{first_top, first_bot, second_top}, 3, 1));
-                add_face(new Face(new int[3]{first_bot, second_bot, second_top}, 3, 1));
+                add_face(new Face(new int[3]{first_top, first_bot, second_top}, 1));
+                add_face(new Face(new int[3]{first_bot, second_bot, second_top}, 1));
                 first_top = first_bot;
                 second_top = second_bot;
             }
