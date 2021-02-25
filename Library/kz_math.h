@@ -3,6 +3,11 @@
 
 #include <math.h>
 
+#define PI 3.141592f
+#define PI_DOUBLE 6.283185f
+#define PI_HALF 1.570796f
+#define RADIAN 57.295780f
+
 class Math {
   public:
     static float map_sin[3142], map_cos[3142];
@@ -15,18 +20,18 @@ class Math {
     }
 
     static float get_sin(float x) {
-        int y = (int)(x / 6.283185f);
+        int y = (int)(x / PI_DOUBLE);
         if (x < 0.0f)
             y -= 1;
-        x -= y * 6.283185f;
+        x -= y * PI_DOUBLE;
         return map_sin[(int)(x * 500)];
     }
 
     static float get_cos(float x) {
-        int y = (int)(x / 6.283185f);
+        int y = (int)(x / PI_DOUBLE);
         if (x < 0.0f)
             y -= 1;
-        x -= y * 6.283185f;
+        x -= y * PI_DOUBLE;
         return map_cos[(int)(x * 500)];
     }
 
@@ -40,8 +45,8 @@ class Math {
         c[2] /= distance;
     }
 
-    static float radian_to_degree(float x) { return x * 57.295780f; }
-    static float degree_to_radian(float x) { return x / 57.295780f; }
+    static float radian_to_degree(float x) { return x * RADIAN; }
+    static float degree_to_radian(float x) { return x / RADIAN; }
     static int clamp(int value, int min, int max) { return value < min ? min : value > max ? max : value; }
     static float clamp(float value, float min, float max) { return value < min ? min : value > max ? max : value; }
 };

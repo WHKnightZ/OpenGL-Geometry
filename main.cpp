@@ -3,7 +3,9 @@
 
 float rotate_x = -70.0f, rotate_y = 0.0f, rotate_z = 0.0f;
 
+Geometry *geometry;
 Sphere *sphere;
+Cylinder *cylinder;
 
 void init() {
     printf("%s\n", glGetString(GL_VENDOR));
@@ -32,7 +34,10 @@ void init() {
 
     Math::init();
 
-    sphere = new Sphere(40.0f, 32, 32);
+    sphere = new Sphere(40.0f, 20, 10);
+    cylinder = new Cylinder(30.0f, 50.0f, 80.0f, 20, 10);
+    
+    geometry = cylinder;
 }
 
 void display() {
@@ -41,7 +46,9 @@ void display() {
     glRotatef(rotate_x, 1.0f, 0.0f, 0.0f);
     glRotatef(rotate_y, 0.0f, 1.0f, 0.0f);
     glRotatef(rotate_z, 0.0f, 0.0f, 1.0f);
-    sphere->render();
+
+    geometry->render();
+
     glutSwapBuffers();
 }
 

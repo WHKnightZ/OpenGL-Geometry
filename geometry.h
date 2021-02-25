@@ -90,7 +90,6 @@ class Geometry {
     }
 
     void add_vertex(float *vertex) { vertices.push_back(vertex); }
-
     void add_face(Face *face) { faces.push_back(face); }
 
     void render() {
@@ -101,21 +100,24 @@ class Geometry {
     }
 };
 
+class Box : public Geometry {
+  public:
+    Box(float width, float height, float depth, int width_segments, int height_segments, int depth_segments) {}
+};
+
 class Sphere : public Geometry {
   public:
     Sphere(float radius, int slices = 20, int stacks = 10) {
         slices = Math::clamp(slices, 3, 32);
         stacks = Math::clamp(stacks, 2, 32);
         float x, y, z, angle_increment = Math::degree_to_radian(360.0f / slices);
-        float z_offset = Math::degree_to_radian(180.0f / stacks);
-        // float z_offset = -radius * 2 / stacks;
+        float theta_offset = Math::degree_to_radian(180.0f / stacks);
         float stack_radius;
         add_vertex(new float[3]{0, 0, radius});
         add_vertex(new float[3]{0, 0, -radius});
         for (int i = 1; i < stacks; i++) {
-            z = Math::get_sin(3.14159/2 - z_offset * i) * radius;
-            stack_radius = sqrt(radius * radius - z * z);
-            // stack_radius = Math::get_sin(z_offset * i) * radius;
+            z = Math::get_cos(theta_offset * i) * radius;
+            stack_radius = Math::get_sin(theta_offset * i) * radius;
             for (int j = 0; j < slices; j++) {
                 x = Math::get_cos(j * angle_increment);
                 y = Math::get_sin(j * angle_increment);
@@ -200,6 +202,30 @@ class Cylinder : public Geometry {
         if (is_list)
             create_list();
     }
+};
+
+class Cone : public Geometry {
+  public:
+};
+
+class Tetrahedron : public Geometry {
+  public:
+};
+
+class Octahedron : public Geometry {
+  public:
+};
+
+class Dodecahedron : public Geometry {
+  public:
+};
+
+class Icosahedron : public Geometry {
+  public:
+};
+
+class Torus : public Geometry {
+  public:
 };
 
 #endif
