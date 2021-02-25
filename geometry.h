@@ -91,13 +91,7 @@ class Geometry {
 
     void add_vertex(float *vertex) { vertices.push_back(vertex); }
     void add_face(Face *face) { faces.push_back(face); }
-
-    void render() {
-        if (list)
-            glCallList(list);
-        else
-            draw();
-    }
+    void render() { glCallList(list); }
 };
 
 class Box : public Geometry {
@@ -159,8 +153,7 @@ class Sphere : public Geometry {
 
 class Cylinder : public Geometry {
   public:
-    Cylinder(float radius_top, float radius_bottom, float height, int slices = 20, int stacks = 10,
-             bool auto_calc_normal = true, bool is_list = true) {
+    Cylinder(float radius_top, float radius_bottom, float height, int slices = 20, int stacks = 10) {
         slices = Math::clamp(slices, 3, 64);
         stacks = Math::clamp(stacks, 1, 64);
         float x, y, angle_increment = Math::degree_to_radian(360.0f / slices);
@@ -195,12 +188,8 @@ class Cylinder : public Geometry {
                 second_top = second_bot;
             }
         }
-
-        if (auto_calc_normal)
-            calc_normal();
-
-        if (is_list)
-            create_list();
+        calc_normal();
+        create_list();
     }
 };
 
