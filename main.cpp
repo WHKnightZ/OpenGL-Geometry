@@ -34,10 +34,10 @@ void init() {
 
     Math::init();
 
-    sphere = new Sphere(40.0f, 20, 10);
+    sphere = new Sphere(40.0f, 64, 64);
     cylinder = new Cylinder(30.0f, 50.0f, 80.0f, 20, 10);
     
-    geometry = cylinder;
+    geometry = sphere;
 }
 
 void display() {

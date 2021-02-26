@@ -96,14 +96,22 @@ class Geometry {
 
 class Box : public Geometry {
   public:
-    Box(float width, float height, float depth, int width_segments, int height_segments, int depth_segments) {}
+    Box(float width, float height, float depth, int width_segments = 1, int height_segments = 1, int depth_segments = 1) {
+        width_segments = Math::clamp(width_segments, 1, 64);
+        height_segments = Math::clamp(height_segments, 1, 64);
+        depth_segments = Math::clamp(depth_segments, 1, 64);
+        int width_offset = width / width_segments;
+        int width_offset = width / width_segments;
+        int width_offset = width / width_segments;
+        
+    }
 };
 
 class Sphere : public Geometry {
   public:
     Sphere(float radius, int slices = 20, int stacks = 10) {
-        slices = Math::clamp(slices, 3, 32);
-        stacks = Math::clamp(stacks, 2, 32);
+        slices = Math::clamp(slices, 3, 64);
+        stacks = Math::clamp(stacks, 2, 64);
         float x, y, z, angle_increment = Math::degree_to_radian(360.0f / slices);
         float theta_offset = Math::degree_to_radian(180.0f / stacks);
         float stack_radius;
@@ -153,7 +161,7 @@ class Sphere : public Geometry {
 
 class Cylinder : public Geometry {
   public:
-    Cylinder(float radius_top, float radius_bottom, float height, int slices = 20, int stacks = 10) {
+    Cylinder(float radius_top, float radius_bottom, float height, int slices = 20, int stacks = 1) {
         slices = Math::clamp(slices, 3, 64);
         stacks = Math::clamp(stacks, 1, 64);
         float x, y, angle_increment = Math::degree_to_radian(360.0f / slices);
